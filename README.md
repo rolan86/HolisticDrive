@@ -1,6 +1,25 @@
-# HolisticDrive
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code_Plugin-16_Agents_%7C_4_Skills_%7C_65_KB_Files-blue?style=for-the-badge" alt="Plugin Scale">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Safety-3_Layer_Graduated-orange?style=for-the-badge" alt="Safety Model">
+  <img src="https://img.shields.io/badge/Architecture-Hybrid_Pipeline_%2B_Swarm-purple?style=for-the-badge" alt="Architecture">
+</p>
 
-Agentic holistic health research framework built as a Claude Code plugin. Provides iterative, multi-domain health analysis with domain specialists, a curated knowledge base, and a three-layer safety model.
+<h1 align="center">HolisticDrive</h1>
+
+<p align="center">
+  <strong>Agentic holistic health research framework for Claude Code.</strong><br>
+  Iterative multi-domain analysis with 9 specialists, a curated knowledge base, and graduated safety.
+</p>
+
+<p align="center">
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="LICENSE">License</a>
+</p>
+
+---
 
 > **HolisticDrive is NOT a doctor.** It is a research specialist and holistic health guide. It provides evidence-informed recommendations — never medical diagnoses or treatments.
 
@@ -37,7 +56,7 @@ Phase 3: Sequential Synthesis
 
 ```bash
 # 1. Clone this repository
-git clone <repo-url> holistic-drive
+git clone https://github.com/rolan86/holistic-drive.git
 cd holistic-drive
 
 # 2. Register as a local marketplace
@@ -58,7 +77,7 @@ claude plugin uninstall holistic-drive@holistic-drive-marketplace
 claude plugin marketplace remove holistic-drive-marketplace
 ```
 
-### Usage
+## Usage
 
 | Command | Description |
 |---------|-------------|
@@ -131,7 +150,8 @@ Safety restrictions propagate through the entire pipeline to all downstream agen
 ```
 holistic-drive/
 ├── .claude-plugin/
-│   └── plugin.json          # Plugin manifest
+│   ├── plugin.json          # Plugin manifest
+│   └── marketplace.json     # Marketplace registration
 ├── CLAUDE.md                # Project instructions
 ├── .mcp.json                # MCP server config (disabled by default)
 ├── agents/
@@ -170,4 +190,4 @@ MCP servers start disabled and can be enabled in `.mcp.json`. All domain special
 
 ## License
 
-This project is provided for educational and research purposes only. It does not constitute medical advice.
+[MIT](LICENSE) — This project is provided for educational and research purposes only. It does not constitute medical advice.
