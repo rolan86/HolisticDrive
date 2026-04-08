@@ -35,9 +35,28 @@ Phase 3: Sequential Synthesis
 
 ### Installation
 
-1. Clone this repository
-2. Open Claude Code in the project directory
-3. The plugin loads automatically via `.claude-plugin/plugin.json`
+```bash
+# 1. Clone this repository
+git clone <repo-url> holistic-drive
+cd holistic-drive
+
+# 2. Register as a local marketplace
+claude plugin marketplace add .
+
+# 3. Install the plugin (project-scoped)
+claude plugin install holistic-drive@holistic-drive-marketplace --scope project
+
+# 4. Restart Claude Code or run /reload-plugins
+```
+
+To install globally (available in all projects), use `--scope user` instead of `--scope project`.
+
+### Uninstall
+
+```bash
+claude plugin uninstall holistic-drive@holistic-drive-marketplace
+claude plugin marketplace remove holistic-drive-marketplace
+```
 
 ### Usage
 
