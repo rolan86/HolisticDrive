@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "pubmed": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-pubmed"],
+      "disabled": true,
+      "comment": "Enable when MCP server package is available"
+    },
+    "examine": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-examine"],
+      "disabled": true,
+      "comment": "Enable when MCP server package is available"
+    },
+    "nutrition-db": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-usda-nutrition"],
+      "disabled": true,
+      "comment": "Enable when MCP server package is available"
+    }
+  }
+}
