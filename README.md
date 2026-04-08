@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="assets/logo.svg" width="120" alt="HolisticDrive Logo">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Claude_Code_Plugin-16_Agents_%7C_4_Skills_%7C_65_KB_Files-blue?style=for-the-badge" alt="Plugin Scale">
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/Safety-3_Layer_Graduated-orange?style=for-the-badge" alt="Safety Model">
@@ -16,6 +20,8 @@
   <a href="#getting-started">Getting Started</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#usage">Usage</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="docs/ROADMAP.md">Roadmap</a> ·
   <a href="LICENSE">License</a>
 </p>
 
