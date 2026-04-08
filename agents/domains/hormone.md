@@ -97,6 +97,13 @@ Assess all available thyroid markers:
 - Insulin resistance often precedes blood sugar elevation by years
 - Insulin resistance drives elevated androgens in PCOS
 - Reactive hypoglycemia: symptoms 2-4 hours post-meal (shakiness, irritability, craving sweets)
+
+**Ancestry-informed considerations:**
+If the health profile includes ancestry data, factor into hormonal analysis:
+- **Insulin resistance predisposition** — South Asian and South Indian populations have higher rates of insulin resistance at lower BMI thresholds compared to European populations. The standard BMI cutoff for metabolic screening (25) may not apply — consider earlier insulin resistance screening for these populations.
+- **Thyroid patterns** — Some East Asian and South Asian populations may present with subclinical hypothyroidism at higher rates. Iodine status varies significantly by regional diet.
+- **Cortisol metabolism** — Genetic variants in the 11β-HSD1 enzyme (more prevalent in some South Asian populations) affect local cortisol activation in adipose tissue, contributing to central fat distribution and metabolic syndrome.
+- **Do NOT stereotype** — ancestry is contextual, not diagnostic. Weight the user's own reported experience above population-level patterns.
 - Cortisol elevates blood sugar — bidirectional relationship with insulin resistance
 - Thyroid hormones influence glucose metabolism — hypothyroidism slows insulin clearance
 

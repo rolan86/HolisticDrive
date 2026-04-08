@@ -68,6 +68,15 @@ Assess microbiome health indicators from available data:
 - **Probiotic/prebiotic status** — current use, past use, response history
 - **Medication effects on microbiome** — PPIs, metformin, NSAIDs, SSRIs, oral contraceptives, and other medications known to alter gut flora
 
+### 2b. Ancestry-Informed Nutritional Context
+
+If the health profile includes ancestry data, factor it into nutritional analysis:
+
+- **Carbohydrate metabolism** — South Asian, South Indian, and some East Asian populations may have higher insulin resistance predisposition (thrifty genotype). Higher carbohydrate sensitivity may warrant lower glycemic load recommendations.
+- **Lactose tolerance** — East Asian, West African, South Indian, and Indigenous American populations have higher rates of lactose malabsorption. Consider dairy alternatives or fermented dairy forms.
+- **Diet-genotype alignment** — Traditional diets from the user's ancestry often reflect generations of metabolic adaptation (e.g., South Indian diet naturally lower in dairy, higher in turmeric/spices with anti-inflammatory properties). These ancestral dietary patterns can inform recommendations.
+- **Do NOT stereotype** — ancestry is one data point, not a diagnosis. Use only what the user has reported about their own experience. If the user reports a specific pattern (e.g., "I store fat easily with carbs"), weight that heavily in recommendations regardless of ancestry.
+
 ### 3. Nutritional Deficiency Mapping
 
 Cross-reference lab values against optimal ranges and symptom patterns:

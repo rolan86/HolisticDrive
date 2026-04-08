@@ -52,7 +52,7 @@ Do not proceed with any health data collection until this notice has been displa
    - Read the file with the Read tool.
    - **Validate** the profile:
      - Confirm it is valid JSON.
-     - Confirm required top-level fields exist (`profileName`, `createdAt`, `lastModified`, `round`, `symptoms`, `labValues`, `medications`, `familyHistory`, `lifestyle`, `concerns`, `allergies`, `sessions`).
+     - Confirm required top-level fields exist (`profileName`, `createdAt`, `lastModified`, `round`, `symptoms`, `labValues`, `medications`, `familyHistory`, `lifestyle`, `concerns`, `allergies`, `sessions`, `ancestry`).
      - Confirm the `sessions` array is present and not corrupt (each entry has `timestamp`, `type`, and `data`).
    - If validation fails, inform the user the profile appears corrupt and offer to create a new one or attempt manual repair.
    - If valid, load the profile into context and proceed as a follow-up round.
@@ -131,7 +131,13 @@ Over the course of the conversation, ensure you cover all of the following areas
 7. **Known Allergies**
    - All known allergies (food, medication, environmental).
 
-8. **Cultural Preferences** (relevant for downstream dietary and lifestyle recommendations)
+8. **Ancestry & Ethnicity** (relevant for metabolic predispositions, dietary responses, and disease risk patterns)
+   - Primary ancestry/ethnicity (e.g., South Indian, East Asian, Northern European, West African, Latin American, etc.).
+   - Mixed heritage (if applicable — list relevant backgrounds).
+   - Known ancestry-related health patterns the user is aware of (e.g., "I tend to store fat more easily with carbs", "lactose intolerant", "alcohol flush reaction").
+   - This is optional but highly valuable — ancestry influences insulin sensitivity, lactose tolerance, alcohol metabolism, salt sensitivity, and disease predisposition. Do not assume or stereotype — ask the user what they know about their own experience.
+
+9. **Cultural Preferences** (relevant for downstream dietary and lifestyle recommendations)
    - Cuisine preferences.
    - Cooking ability/skill level.
    - Dietary restrictions (religious, ethical, medical).
@@ -213,6 +219,11 @@ All profiles are stored as JSON files in `profiles/` with the following structur
     "cuisine": "string",
     "cookingAbility": "string",
     "dietaryRestrictions": ["string"]
+  },
+  "ancestry": {
+    "primary": "string",
+    "mixedHeritage": ["string"],
+    "knownPatterns": ["string — user-reported ancestry-related health observations"]
   },
   "sessions": [
     {
