@@ -1,7 +1,6 @@
 ---
 name: holistic-checkin
 description: Follow-up check-in — track progress and adjust your holistic health protocol
-user_invocable: true
 ---
 
 # /holistic-checkin

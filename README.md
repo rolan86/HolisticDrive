@@ -37,7 +37,7 @@ Phase 3: Sequential Synthesis
 
 1. Clone this repository
 2. Open Claude Code in the project directory
-3. The plugin loads automatically via `plugin.json`
+3. The plugin loads automatically via `.claude-plugin/plugin.json`
 
 ### Usage
 
@@ -111,7 +111,8 @@ Safety restrictions propagate through the entire pipeline to all downstream agen
 
 ```
 holistic-drive/
-├── plugin.json              # Plugin manifest
+├── .claude-plugin/
+│   └── plugin.json          # Plugin manifest
 ├── CLAUDE.md                # Project instructions
 ├── .mcp.json                # MCP server config (disabled by default)
 ├── agents/
@@ -123,7 +124,11 @@ holistic-drive/
 │   ├── safety-review.md     # Phase 3 safety audit
 │   ├── protocol-generator.md # Output generation
 │   └── domains/             # 9 domain specialists
-├── skills/                  # 4 user-facing skills
+├── skills/
+│   ├── holistic-review/     # Full analysis entry point
+│   ├── holistic-checkin/    # Follow-up session
+│   ├── holistic-research/   # Targeted research
+│   └── holistic-status/     # Protocol snapshot
 ├── knowledge-base/          # Curated reference library
 │   ├── interactions/        # Safety-critical interaction data
 │   ├── conditions/          # Condition reference cards

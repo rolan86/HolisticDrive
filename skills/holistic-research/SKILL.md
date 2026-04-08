@@ -1,7 +1,6 @@
 ---
 name: holistic-research
 description: Targeted deep dive on a specific health topic — focused research using knowledge base + web search
-user_invocable: true
 ---
 
 # /holistic-research

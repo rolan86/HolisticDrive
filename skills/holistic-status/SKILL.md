@@ -1,7 +1,6 @@
 ---
 name: holistic-status
 description: View current protocol snapshot and profile status
-user_invocable: true
 ---
 
 # /holistic-status

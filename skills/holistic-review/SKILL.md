@@ -1,7 +1,6 @@
 ---
 name: holistic-review
 description: Full holistic health analysis — comprehensive multi-domain assessment
-user_invocable: true
 ---
 
 # /holistic-review
