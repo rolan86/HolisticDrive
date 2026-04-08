@@ -45,15 +45,15 @@ Agent tool:
 | `intake` | 1 | Collect health data, manage profiles |
 | `safety-gate` | 1 | Scan for danger signs, safety assessment |
 | `triage` | 1 | Route to appropriate specialists |
-| `gut-nutrition` | 2 | Microbiome, digestion, nutrition |
-| `dietician` | 2 | Meal planning, cuisine blending |
-| `hormone` | 2 | Endocrine system, thyroid, cortisol |
-| `mind` | 2 | Stress, anxiety, nervous system |
-| `genetic` | 2 | SNPs, nutrigenomics, family history |
-| `sleep` | 2 | Sleep architecture, circadian rhythm |
-| `immune` | 2 | Autoimmune, inflammation |
-| `musculoskeletal` | 2 | Joint health, movement, exercise |
-| `ayurveda` | 2 | Dosha analysis, constitutional protocols |
+| `domains/gut-nutrition` | 2 | Microbiome, digestion, nutrition |
+| `domains/dietician` | 2 | Meal planning, cuisine blending |
+| `domains/hormone` | 2 | Endocrine system, thyroid, cortisol |
+| `domains/mind` | 2 | Stress, anxiety, nervous system |
+| `domains/genetic` | 2 | SNPs, nutrigenomics, family history |
+| `domains/sleep` | 2 | Sleep architecture, circadian rhythm |
+| `domains/immune` | 2 | Autoimmune, inflammation |
+| `domains/musculoskeletal` | 2 | Joint health, movement, exercise |
+| `domains/ayurveda` | 2 | Dosha analysis, constitutional protocols |
 | `cross-reference` | 3 | Cross-domain connections, conflict resolution |
 | `safety-review` | 3 | Final safety audit, interaction checking |
 | `protocol-generator` | 3 | Produce user-facing report |
@@ -113,7 +113,7 @@ Dispatch ALL active domain specialists simultaneously using the Agent tool. Send
 
 ```
 Agent tool:
-  subagent_type: "gut-nutrition"
+  subagent_type: "domains/gut-nutrition"
   prompt: "Analyze the following health profile for gut and nutrition concerns.
 
 Session ID: <SESSION_ID>

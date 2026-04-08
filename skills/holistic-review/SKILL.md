@@ -47,7 +47,7 @@ Use the Agent tool with `subagent_type: "triage"`. Tell it to read the health pr
 
 Dispatch ALL active domain specialists simultaneously using the Agent tool. For each specialist, use `subagent_type` matching their name:
 
-- `gut-nutrition`, `dietician`, `hormone`, `mind`, `genetic`, `sleep`, `immune`, `musculoskeletal`, `ayurveda`
+- `domains/gut-nutrition`, `domains/dietician`, `domains/hormone`, `domains/mind`, `domains/genetic`, `domains/sleep`, `domains/immune`, `domains/musculoskeletal`, `domains/ayurveda`
 
 Each specialist prompt should include: session ID, health profile data, safety restrictions, active domains, and priority domain. Each specialist writes findings to `findings/{domain}-{sessionId}.json`.
 
