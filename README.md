@@ -41,7 +41,7 @@ git clone <repo-url> holistic-drive
 cd holistic-drive
 
 # 2. Register as a local marketplace
-claude plugin marketplace add .
+claude plugin marketplace add ./
 
 # 3. Install the plugin (project-scoped)
 claude plugin install holistic-drive@holistic-drive-marketplace --scope project
