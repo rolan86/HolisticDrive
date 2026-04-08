@@ -97,14 +97,15 @@ Domain specialist agents run in parallel via Claude Code's parallel agent dispat
 - **User notification:** The final output includes a note if web research was limited (e.g., "Some research sources were unavailable — recommendations are based on curated knowledge only. Consider verifying independently.")
 
 **Active Domain Specialists (v1):**
-1. **Gut Specialist** — Microbiome, digestion, nutrition absorption, food sensitivities, gut-brain axis
-2. **Hormone Specialist** — Endocrine system, thyroid, cortisol, sex hormones, adrenal function
-3. **Mind Specialist** — Stress, anxiety, cognitive function, nervous system, emotional patterns
-4. **Genetic Specialist** — SNPs, hereditary patterns, MTHFR, genetic predispositions
-5. **Sleep Specialist** — Sleep architecture, circadian rhythm, melatonin/cortisol cycles, sleep hygiene
-6. **Immune & Inflammation Specialist** — Autoimmune patterns, chronic inflammation, immune modulation, CRP/ESR interpretation
-7. **Musculoskeletal & Movement Specialist** — Joint health, muscle imbalances, fascia, posture, movement patterns, exercise prescription
-8. **Ayurvedic Constitution Specialist** — Dosha analysis (Vata/Pitta/Kapha), prakriti/vikriti, ritucharya (seasonal protocols), dinacharya (daily routine), dravyaguna (herbal pharmacology)
+1. **Gut & Nutrition Specialist** — Microbiome, digestion, nutrition absorption, food sensitivities, gut-brain axis, macro/micronutrient analysis, nutritional deficiency mapping, food-as-medicine protocols
+2. **Dietician & Culinary Specialist** — Dietary pattern assessment, meal planning, cuisine blending (making therapeutic food palatable), cultural food preferences, recipe adaptation, flavor pairing for nutrient-dense meals, cooking methods that preserve nutritional value
+3. **Hormone Specialist** — Endocrine system, thyroid, cortisol, sex hormones, adrenal function
+4. **Mind Specialist** — Stress, anxiety, cognitive function, nervous system, emotional patterns
+5. **Genetic Specialist** — SNPs, hereditary patterns, MTHFR, genetic predispositions
+6. **Sleep Specialist** — Sleep architecture, circadian rhythm, melatonin/cortisol cycles, sleep hygiene
+7. **Immune & Inflammation Specialist** — Autoimmune patterns, chronic inflammation, immune modulation, CRP/ESR interpretation
+8. **Musculoskeletal & Movement Specialist** — Joint health, muscle imbalances, fascia, posture, movement patterns, exercise prescription
+9. **Ayurvedic Constitution Specialist** — Dosha analysis (Vata/Pitta/Kapha), prakriti/vikriti, ritucharya (seasonal protocols), dinacharya (daily routine), dravyaguna (herbal pharmacology)
 
 **Future Domain Specialists (TODO):**
 - Cardiovascular Specialist
@@ -242,7 +243,8 @@ holistic-drive/
     safety-review.md             # Phase 3 protocol audit (standalone agent)
     triage.md                    # Route to domain specialists
     domains/
-      gut.md
+      gut-nutrition.md
+      dietician.md
       hormone.md
       mind.md
       genetic.md
@@ -286,7 +288,8 @@ The plugin manifest registers all agents, skills, and MCP servers with Claude Co
     "triage": "agents/triage.md",
     "cross-reference": "agents/cross-reference.md",
     "protocol-generator": "agents/protocol-generator.md",
-    "domains/gut": "agents/domains/gut.md",
+    "domains/gut-nutrition": "agents/domains/gut-nutrition.md",
+    "domains/dietician": "agents/domains/dietician.md",
     "domains/hormone": "agents/domains/hormone.md",
     "domains/mind": "agents/domains/mind.md",
     "domains/genetic": "agents/domains/genetic.md",
