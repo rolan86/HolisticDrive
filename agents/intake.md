@@ -231,7 +231,14 @@ All profiles are stored as JSON files in `profiles/` with the following structur
       "type": "initial|follow-up",
       "data": {}
     }
-  ]
+  ],
+  "habitTracker": {
+    "startedOn": "ISO date",
+    "reviewOn": "ISO date (next check-in)",
+    "dailyHabits": [ { "id": "string", "label": "string", "target": "string", "why": "string (optional)" } ],
+    "weeklyHabits": [ { "id": "string", "label": "string", "target": "string" } ],
+    "weeklyLog": [ { "week": 1, "dateStart": "ISO date", "entries": { "habitId": "value" }, "notes": "string" } ]
+  }
 }
 ```
 
@@ -242,6 +249,7 @@ All profiles are stored as JSON files in `profiles/` with the following structur
 - **`round`**: Increment by 1 on each follow-up session.
 - **Arrays**: When updating symptoms, medications, etc., merge new entries with existing ones. If a user says a symptom has resolved, do not remove it — note it as resolved in the patterns field.
 - **Use the Write tool** to save the complete updated profile after each session.
+- **`habitTracker` (optional)**: a self-tracking structure for the iterative run. `dailyHabits`/`weeklyHabits` define what to track and their targets; `weeklyLog` accumulates one entry per week (each `entries` object keyed by habit `id`). Append or fill weeks — never overwrite past weeks. Surfaced by `/holistic-status` and reviewed/updated at `/holistic-checkin`.
 
 ---
 

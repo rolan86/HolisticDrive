@@ -11,9 +11,10 @@ Follow-up check-in for existing HolisticDrive users. Captures feedback on your p
 
 1. **Select Your Profile** — Lists available profiles from `profiles/` or prompts you to choose
 2. **Review Current Protocol** — Displays your most recent session summary and recommendations
-3. **Share Your Experience** — Collects feedback on what improved, what didn't, new symptoms, new lab results, adherence to recommendations, and any adverse effects
-4. **Generate Adjusted Protocol** — Runs the three-phase pipeline with `round="follow-up"` to update your holistic health plan
-5. **Highlight Changes** — Shows what's different from your previous protocol
+3. **Review the Habit Tracker** — If the profile has a `habitTracker`, review adherence and trends from the `weeklyLog` (sleep, walks, training, breathing, HRV, steps, gut/energy), append or fill the current week's entry, and compare against the protocol's success criteria
+4. **Share Your Experience** — Collects feedback on what improved, what didn't, new symptoms, new lab results, adherence to recommendations, and any adverse effects
+5. **Generate Adjusted Protocol** — Runs the three-phase pipeline with `round="follow-up"` to update your holistic health plan
+6. **Highlight Changes** — Shows what's different from your previous protocol
 
 ## What You'll Need
 
@@ -47,7 +48,8 @@ This skill invokes the Orchestrator Agent with:
     "newLabResults": ["any new lab values"],
     "adherence": ["recommendations followed"],
     "notFollowed": ["recommendations not followed"],
-    "adverseEffects": ["any adverse reactions"]
+    "adverseEffects": ["any adverse reactions"],
+    "habitTracker": "adherence & trends summarised from the profile's weeklyLog (sleep, HRV, steps, training, gut/energy)"
   }
 }
 ```

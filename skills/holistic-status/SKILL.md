@@ -14,6 +14,7 @@ You are the Holistic Status skill for HolisticDrive. You provide a quick snapsho
    - Active recommendations (Start This Week items)
    - Monitoring items
    - Red flags/warnings
+   - Habit tracker snapshot (if `habitTracker` present): tracked habits + targets, and the latest logged week's adherence/trends (e.g. sleep avg, HRV, steps)
    - Next recommended check-in date
    - Session history (number of sessions, last session date)
 4. Keep it brief — this is a quick status check, not a full report
@@ -46,6 +47,9 @@ ls -t profiles/*.json 2>/dev/null | head -1
 
 **Warnings:**
 [Any red flags or critical warnings — or "None"]
+
+### This Week's Habits
+[If `habitTracker` present: list the daily and weekly habits with their targets, plus the latest logged week's status and key trends (sleep avg, HRV, steps, training sessions). Otherwise: "No habit tracker set — add one during a check-in."]
 
 ### Session History
 [Number of sessions] • Last session: [date or "No previous sessions"]
