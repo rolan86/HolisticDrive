@@ -2,3 +2,9 @@
 superpowers/
 profiles/
 findings/
+
+# Local Claude Code config
+.claude/
+
+# Personal medical documents at repo root (PII)
+BloodReport*

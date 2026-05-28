@@ -39,8 +39,15 @@ You receive from the Orchestrator:
 
 1. **Session ID** — used to filter findings files in `findings/`.
 2. **Safety Gate assessment** — the full safety assessment including state, restrictions, medications, and concerns.
-3. **Triage routing** — which domains were activated and which was priority, so you know which findings to expect.
+3. **Triage routing** — which domains were activated and which was priority, so you know which findings to expect. Includes `researchFlags`.
 4. **User profile path** — `profiles/<user-id>/` for reference if needed.
+
+### Finding file types
+
+You glob `findings/*-<sessionId>.json`. Two shapes will appear:
+
+- **Domain findings** (`findings/{domain}-{sessionId}.json` from Phase 2): per-domain analysis with `domain`, `findings`, `recommendations`, `crossDomainSignals`, optional `researchFlags`. These are your primary inputs for cross-domain connection and conflict mapping.
+- **Medical research brief** (`findings/medical-research-{sessionId}.json` from Phase 2.5): per-topic bias-balanced literature briefs. Use these to **inform** conflict resolution when a topic is contested in the evidence base. Treat the brief's `confidence` level and `liveDisagreement` content as inputs to your conflict-resolution weighting — if mainstream and heterodox positions both have credible standing on a topic, do NOT collapse the disagreement into a single recommendation; surface it as a contested topic in your output.
 
 ---
 
