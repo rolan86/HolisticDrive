@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<!--
+  Content Security Policy: defense-in-depth against XSS.
+  Even if the markdown renderer's HTML-escaping were bypassed, this policy
+  blocks (a) any third-party script, (b) any network call other than to
+  Anthropic, (c) any inline event handlers (would require 'unsafe-hashes'),
+  (d) base-URI hijacking, (e) being embedded in iframes (clickjacking).
+  We keep 'unsafe-inline' for script-src and style-src because the entire
+  app is one self-contained file — the inline JS *is* the app.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<title>HolisticDrive · v1 engine prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F0E8;--card:#FBF8F2;--card-2:#FEFCF8;--ink:#222826;--ink-soft:#49514D;--muted:#7E867F;
+  --line:#E4DCCD;--line-soft:#EEE7DA;--sage:#2F5D50;--sage-soft:#5C8576;--sage-tint:#E7EFEA;
+  --good:#356B4C;--good-bg:#E6EFE7;--watch:#9C6B17;--watch-bg:#F6ECD3;--high:#A8492F;--high-bg:#F3E1DA;--clay:#A8492F;
+  --shadow:0 1px 2px rgba(40,30,15,.04),0 8px 24px rgba(40,30,15,.05);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:"Spline Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 10% -8%,rgba(92,133,118,.10),transparent 40%),radial-gradient(circle at 96% 0%,rgba(168,73,47,.06),transparent 36%);
+  display:flex;flex-direction:column;}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0}
+.mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--sage);text-underline-offset:3px}
+
+.wrap{max-width:760px;width:100%;margin:0 auto;padding:24px 20px 0;display:flex;flex-direction:column;flex:1;min-height:0}
+
+header.mast{padding:6px 0 16px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--sage);font-weight:500}
+.mast h1{font-size:24px;margin-top:4px}
+.mast .lead{font-size:13.5px;color:var(--ink-soft);margin:2px 0 0;max-width:60ch}
+
+/* settings panel */
+.settings{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0 0;box-shadow:var(--shadow);flex:0 0 auto;font-size:14px}
+.settings.collapsed .settings-body{display:none}
+.settings-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.settings-head .title{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.settings-head .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status.ok .dot{background:var(--good)}
+.status.warn .dot{background:var(--clay)}
+.toggle-btn{background:none;border:none;color:var(--sage);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px}
+.settings-body{margin-top:14px;display:grid;gap:12px}
+.row{display:grid;gap:6px}
+.row label{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.row input[type="password"],.row input[type="text"],.row select{font-family:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card-2);color:var(--ink);width:100%}
+.row input:focus,.row select:focus{outline:2px solid var(--sage);outline-offset:-1px;border-color:var(--sage)}
+.row .hint{font-size:11.5px;color:var(--muted);line-height:1.4}
+.row .hint a{color:var(--sage)}
+.checkbox-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft)}
+.checkbox-row input[type="checkbox"]{margin:0}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:8px;border:1px solid var(--sage);color:var(--sage);background:var(--card-2);transition:transform .15s}
+.btn.solid{background:var(--sage);color:#fff;border-color:var(--sage)}
+.btn.danger{border-color:var(--clay);color:var(--clay)}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* chat */
+.chat{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-top:14px}
+.messages{flex:1 1 auto;overflow-y:auto;padding:8px 4px 16px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;flex-direction:column;gap:4px;max-width:88%}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.msg.assistant{align-self:flex-start;align-items:flex-start}
+.msg.system{align-self:center;align-items:center;max-width:92%}
+.msg .meta{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bubble{padding:11px 15px;border-radius:14px;font-size:15px;line-height:1.55;box-shadow:var(--shadow);word-wrap:break-word;overflow-wrap:anywhere}
+.msg.user .bubble{background:var(--sage-tint);border:1px solid #CFE0D7;border-bottom-right-radius:4px;color:var(--ink)}
+.msg.assistant .bubble{background:var(--card-2);border:1px solid var(--line);border-left:3px solid var(--clay);border-bottom-left-radius:4px}
+.msg.system .bubble{background:var(--watch-bg);border:1px solid #E4D5A8;font-size:13.5px;color:var(--watch);font-family:"JetBrains Mono",monospace;letter-spacing:.02em}
+.msg.error .bubble{background:var(--high-bg);border:1px solid #E3C7BC;border-left:3px solid var(--clay);color:var(--high);font-size:13.5px;font-family:"JetBrains Mono",monospace;letter-spacing:.02em}
+.bubble p{margin:0 0 9px}.bubble p:last-child{margin:0}
+.bubble ul,.bubble ol{margin:6px 0;padding-left:22px}.bubble li{margin-bottom:3px}
+.bubble code{font-family:"JetBrains Mono",monospace;font-size:13px;background:rgba(47,93,80,.08);padding:1px 6px;border-radius:4px}
+.bubble pre{background:rgba(47,93,80,.06);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:8px 0}
+.bubble pre code{background:none;padding:0;font-size:12.5px}
+.bubble strong{font-weight:600;color:var(--ink)}
+.bubble em{font-style:italic}
+.bubble a{color:var(--sage)}
+.bubble h1,.bubble h2,.bubble h3,.bubble h4{font-family:"Fraunces",Georgia,serif;margin:14px 0 6px;font-weight:600}
+.bubble h3{font-size:17px;color:var(--sage)}
+.bubble h4{font-size:15px;color:var(--ink)}
+
+/* typing indicator */
+.typing{display:flex;gap:4px;padding:6px 4px}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--sage-soft);animation:tp 1.2s infinite ease-in-out}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,80%,100%{transform:scale(.5);opacity:.5}40%{transform:scale(1);opacity:1}}
+
+/* composer */
+.composer{flex:0 0 auto;padding:12px 0 18px;background:var(--paper);border-top:1px solid var(--line);position:sticky;bottom:0}
+.composer .input-row{display:flex;align-items:flex-end;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);transition:border-color .15s}
+.composer .input-row:focus-within{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint),var(--shadow)}
+.composer textarea{flex:1 1 auto;border:none;background:none;font-family:inherit;font-size:15px;line-height:1.5;color:var(--ink);resize:none;outline:none;min-height:24px;max-height:200px;padding:4px 0}
+.composer .send{flex:0 0 auto;width:36px;height:36px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-size:18px;display:inline-flex;align-items:center;justify-content:center;transition:transform .15s}
+.composer .send:hover{transform:translateY(-1px)}
+.composer .send:disabled{background:var(--muted);cursor:not-allowed;transform:none}
+.composer .hint{font-size:11px;color:var(--muted);margin:6px 4px 0;display:flex;justify-content:space-between;gap:10px}
+.composer .hint .privacy{color:var(--sage-soft)}
+
+/* empty state */
+.empty{margin:40px auto;max-width:480px;text-align:center;padding:24px;color:var(--ink-soft)}
+.empty h2{font-size:22px;color:var(--ink);margin-bottom:8px}
+.empty p{font-size:14px;margin:0 0 8px}
+.empty .pill{display:inline-flex;align-items:center;gap:6px;background:var(--watch-bg);border:1px solid #E4D5A8;color:var(--watch);font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:10px}
+
+@media(max-width:600px){
+  .wrap{padding:14px 14px 0}
+  .mast h1{font-size:20px}
+  .msg{max-width:94%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="eyebrow">HolisticDrive · v1 engine prototype</div>
+  <h1>Engine connectivity test</h1>
+  <p class="lead">Proves the browser can talk to Anthropic with the HolisticDrive intake prompt. No persistence, no pipeline, no file upload yet — that comes in v2. Your API key lives in your browser only.</p>
+</header>
+
+<section class="settings" id="settings">
+  <div class="settings-head">
+    <span class="title">Configuration</span>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="status" id="status"><span class="dot"></span><span id="status-text">No key set</span></span>
+      <button class="toggle-btn" id="toggle-settings" type="button">Hide</button>
+    </div>
+  </div>
+  <div class="settings-body">
+    <div class="row direct-only">
+      <label for="api-key">Anthropic API key</label>
+      <input type="password" id="api-key" placeholder="sk-ant-..." autocomplete="off">
+      <div class="hint">Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a>. Required first-time only. Stored locally in your browser — never transmitted except to Anthropic.</div>
+    </div>
+    <div class="row direct-only">
+      <label for="model">Model</label>
+      <select id="model">
+        <option value="claude-sonnet-4-6">Claude Sonnet 4.6 — balanced (default)</option>
+        <option value="claude-opus-4-7">Claude Opus 4.7 — most capable, more expensive</option>
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 — fastest, cheapest</option>
+      </select>
+    </div>
+    <div class="checkbox-row direct-only">
+      <input type="checkbox" id="remember">
+      <label for="remember" style="font-family:inherit;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-soft)">Remember key on this device (uses localStorage). If unchecked, key clears when you close this tab.</label>
+    </div>
+    <div class="btn-row">
+      <button class="btn solid direct-only" id="save-key" type="button">Save &amp; start</button>
+      <button class="btn danger direct-only" id="clear-key" type="button">Clear stored key</button>
+      <button class="btn" id="reset-chat" type="button">Reset chat</button>
+    </div>
+    <div class="server-only" style="display:none;font-size:13px;color:var(--ink-soft);background:var(--sage-tint);border:1px solid #CFE0D7;border-radius:8px;padding:11px 14px;line-height:1.5">
+      <strong style="color:var(--sage)">Server mode active.</strong> The local server (<span class="mono">server.ts</span>) is handling chat via the Claude Agent SDK. No API key needed in the browser — auth is handled server-side. Stop the server with <span class="mono">Ctrl+C</span> in the terminal where it's running.
+    </div>
+  </div>
+</section>
+
+<div class="chat">
+  <div class="messages" id="messages">
+    <div class="empty" id="empty">
+      <h2>Ready when you are.</h2>
+      <p>Type a message below to start. The intake assistant will reply here. In server mode (when launched via <span class="mono">npm start</span>) auth is already handled — in direct mode, paste an API key in Settings first.</p>
+      <p>This is an engine-connectivity prototype — no persistence between sessions yet, no file uploads. Just proving the pipeline talks.</p>
+      <span class="pill">v1 · proof of engine</span>
+    </div>
+  </div>
+  <div class="composer">
+    <div class="input-row">
+      <textarea id="input" placeholder="Type a message... (Enter to send, Shift+Enter for newline)" rows="1" disabled></textarea>
+      <button class="send" id="send" type="button" disabled aria-label="Send message">→</button>
+    </div>
+    <div class="hint">
+      <span><span class="mono" id="msg-count">0</span> messages · model: <span class="mono" id="current-model">claude-sonnet-4-6</span></span>
+      <span class="privacy">data stays in your browser</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// =============================================================
+//  HolisticDrive v1 — engine connectivity prototype
+//  - Single-file static web app
+//  - Direct Anthropic API call from browser (no server)
+//  - System prompt embedded; future v2 loads from agents/*.md
+// =============================================================
+
+const SYSTEM_PROMPT = `You are HolisticDrive — a research-informed holistic health intake specialist. You are NOT a doctor and never diagnose, treat, or cure conditions.
+
+Your role in this conversation: gather the user's health context conversationally — lab values, current symptoms, diet patterns, sleep, activity, family history, current medications, supplements, lifestyle factors. Reflect back what you hear in a way that shows you understood. Ask follow-ups that surface what actually matters for their situation, not surveys.
+
+Language standards (always):
+- Use advisory framing: "may suggest", "is associated with", "consider discussing with your practitioner"
+- Flag potential concerns with explicit confidence levels (low / moderate / high)
+- Never recommend stopping prescribed medications
+- Never claim to diagnose, treat, or cure any condition
+
+Iterative principles:
+- Start low, go slow — first responses introduce 2–3 changes, not 20
+- Observe before adding — acknowledge that changes need time to work
+- Address root causes when you can, but acknowledge symptom relief matters too
+- Not everything needs fixing at once — prioritize by impact and safety
+
+Format guidance:
+- Conversational, not clinical. Match the user's energy.
+- Markdown is rendered (headings, bold, italic, lists, code, links).
+- Use short paragraphs and structured lists when the content benefits.
+- One or two thoughtful questions per turn beats a checklist of ten.
+
+Scope of this v1 prototype:
+- You currently have no tools (no file system, no profile persistence, no document upload).
+- If the user wants their data structured or saved, tell them this is the engine-connectivity prototype and persistence layer arrives in v2.
+- If they paste lab values or a list of symptoms, reflect them back accurately and offer initial advisory thoughts — but be clear that proper analysis needs the full pipeline.
+
+Be warm, direct, and respectful of the user's autonomy. They are the expert on their own life.`;
+
+const LS_KEY = 'hd_api_key';
+const LS_MODEL = 'hd_model';
+const LS_REMEMBER = 'hd_remember';
+
+// mode:
+//   'detecting' — initial state during /api/health probe
+//   'server'    — local server is running (uses subscription auth or env API key)
+//   'direct'    — no server detected; browser calls Anthropic API directly with user-supplied key
+const state = {
+  apiKey: '',
+  model: 'claude-sonnet-4-6',
+  remember: false,
+  messages: [],
+  isSending: false,
+  mode: 'detecting',
+  serverSessionId: null,
+  serverAuthMode: null, // 'subscription' | 'api-key' | null
+};
+
+// ---- DOM ----
+const $ = (id) => document.getElementById(id);
+const els = {
+  settings: $('settings'),
+  toggleSettings: $('toggle-settings'),
+  status: $('status'),
+  statusText: $('status-text'),
+  apiKey: $('api-key'),
+  model: $('model'),
+  remember: $('remember'),
+  saveKey: $('save-key'),
+  clearKey: $('clear-key'),
+  resetChat: $('reset-chat'),
+  messages: $('messages'),
+  empty: $('empty'),
+  input: $('input'),
+  send: $('send'),
+  msgCount: $('msg-count'),
+  currentModel: $('current-model'),
+};
+
+// ---- Init ----
+function init() {
+  loadSettings();
+  applySettingsToUI();
+
+  els.toggleSettings.addEventListener('click', toggleSettings);
+  els.saveKey.addEventListener('click', onSaveKey);
+  els.clearKey.addEventListener('click', onClearKey);
+  els.resetChat.addEventListener('click', onResetChat);
+  els.model.addEventListener('change', onModelChange);
+  els.remember.addEventListener('change', onRememberChange);
+  els.input.addEventListener('keydown', onInputKeyDown);
+  els.input.addEventListener('input', autoGrowInput);
+  els.send.addEventListener('click', onSend);
+
+  // Probe for a local server (subscription-auth backend) before showing
+  // the API key UI. If the probe fails, fall back to direct browser-to-
+  // Anthropic mode with the user's pasted key.
+  detectMode().then(() => refreshStatus());
+}
+
+async function detectMode() {
+  // Only meaningful when loaded over http(s) — file:// has no server to probe.
+  if (location.protocol === 'file:') {
+    state.mode = 'direct';
+    return;
+  }
+  try {
+    const res = await fetch('/api/health', { method: 'GET', cache: 'no-store' });
+    if (!res.ok) throw new Error('health probe returned ' + res.status);
+    const data = await res.json();
+    if (data && data.ok === true && typeof data.authMode === 'string') {
+      state.mode = 'server';
+      state.serverAuthMode = data.authMode;
+      return;
+    }
+    throw new Error('health probe returned malformed JSON');
+  } catch {
+    state.mode = 'direct';
+  }
+}
+
+function loadSettings() {
+  const remembered = localStorage.getItem(LS_REMEMBER) === '1';
+  state.remember = remembered;
+  state.apiKey = remembered
+    ? (localStorage.getItem(LS_KEY) || '')
+    : (sessionStorage.getItem(LS_KEY) || '');
+  state.model = localStorage.getItem(LS_MODEL) || 'claude-sonnet-4-6';
+}
+
+function applySettingsToUI() {
+  els.apiKey.value = state.apiKey;
+  els.model.value = state.model;
+  els.remember.checked = state.remember;
+  els.currentModel.textContent = state.model;
+}
+
+function persistSettings() {
+  localStorage.setItem(LS_MODEL, state.model);
+  localStorage.setItem(LS_REMEMBER, state.remember ? '1' : '0');
+  if (state.remember) {
+    localStorage.setItem(LS_KEY, state.apiKey);
+    sessionStorage.removeItem(LS_KEY);
+  } else {
+    localStorage.removeItem(LS_KEY);
+    if (state.apiKey) sessionStorage.setItem(LS_KEY, state.apiKey);
+    else sessionStorage.removeItem(LS_KEY);
+  }
+}
+
+function refreshStatus() {
+  // Server mode: always ready, no key needed.
+  if (state.mode === 'server') {
+    els.status.className = 'status ok';
+    const authLabel = state.serverAuthMode === 'subscription' ? 'subscription' : 'API key (env)';
+    els.statusText.textContent = 'Server mode · ' + authLabel;
+    els.input.disabled = false;
+    els.send.disabled = false;
+    els.input.placeholder = 'Type a message... (Enter to send, Shift+Enter for newline)';
+    // Hide direct-mode-only controls; the server already has its own auth.
+    document.querySelectorAll('.direct-only').forEach((el) => {
+      el.style.display = 'none';
+    });
+    // Show server-mode-only banner.
+    document.querySelectorAll('.server-only').forEach((el) => {
+      el.style.display = '';
+    });
+    return;
+  }
+
+  // Detecting: show neutral state, keep input disabled briefly.
+  if (state.mode === 'detecting') {
+    els.status.className = 'status';
+    els.statusText.textContent = 'Detecting server…';
+    els.input.disabled = true;
+    els.send.disabled = true;
+    return;
+  }
+
+  // Direct mode (browser → Anthropic).
+  if (state.apiKey) {
+    els.status.className = 'status ok';
+    els.statusText.textContent = state.remember ? 'Direct mode · key saved locally' : 'Direct mode · key set for this session';
+    els.input.disabled = false;
+    els.send.disabled = false;
+    els.input.placeholder = 'Type a message... (Enter to send, Shift+Enter for newline)';
+  } else {
+    els.status.className = 'status warn';
+    els.statusText.textContent = 'Direct mode · no key set';
+    els.input.disabled = true;
+    els.send.disabled = true;
+    els.input.placeholder = 'Save an API key in the settings panel above to start.';
+  }
+}
+
+function toggleSettings() {
+  els.settings.classList.toggle('collapsed');
+  els.toggleSettings.textContent = els.settings.classList.contains('collapsed') ? 'Show' : 'Hide';
+}
+
+function onSaveKey() {
+  const v = els.apiKey.value.trim();
+  if (!v) {
+    flashError('Paste a key first.');
+    return;
+  }
+  state.apiKey = v;
+  state.model = els.model.value;
+  state.remember = els.remember.checked;
+  persistSettings();
+  refreshStatus();
+  // Collapse settings after save if chat is empty
+  if (state.messages.length === 0) {
+    els.settings.classList.add('collapsed');
+    els.toggleSettings.textContent = 'Show';
+  }
+  els.input.focus();
+}
+
+function onClearKey() {
+  state.apiKey = '';
+  els.apiKey.value = '';
+  localStorage.removeItem(LS_KEY);
+  sessionStorage.removeItem(LS_KEY);
+  refreshStatus();
+}
+
+function onResetChat() {
+  state.messages = [];
+  state.serverSessionId = null;
+  renderMessages();
+  els.input.value = '';
+  autoGrowInput();
+  updateMsgCount();
+}
+
+function onModelChange() {
+  state.model = els.model.value;
+  els.currentModel.textContent = state.model;
+  persistSettings();
+}
+
+function onRememberChange() {
+  state.remember = els.remember.checked;
+  persistSettings();
+  refreshStatus();
+}
+
+function onInputKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    onSend();
+  }
+}
+
+function autoGrowInput() {
+  const t = els.input;
+  t.style.height = 'auto';
+  t.style.height = Math.min(t.scrollHeight, 200) + 'px';
+}
+
+async function onSend() {
+  const text = els.input.value.trim();
+  if (!text || state.isSending) return;
+  if (state.mode === 'direct' && !state.apiKey) {
+    flashError('No API key set. Open Settings and save one.');
+    return;
+  }
+  if (state.mode === 'detecting') {
+    flashError('Still detecting server. Try again in a moment.');
+    return;
+  }
+  // Hide empty state
+  if (els.empty) {
+    els.empty.style.display = 'none';
+  }
+  // Append user message
+  appendMessage({ role: 'user', content: text });
+  els.input.value = '';
+  autoGrowInput();
+  updateMsgCount();
+
+  // Show typing indicator
+  state.isSending = true;
+  els.send.disabled = true;
+  els.input.disabled = true;
+  const typingNode = appendTypingIndicator();
+  scrollToBottom();
+
+  try {
+    let reply;
+    if (state.mode === 'server') {
+      reply = await callServer(text);
+    } else {
+      reply = await callAnthropic({
+        apiKey: state.apiKey,
+        model: state.model,
+        system: SYSTEM_PROMPT,
+        // In direct mode we send the full history each turn; in server mode
+        // the SDK threads via session resume so the request stays small.
+        messages: state.messages.map(m => ({ role: m.role, content: m.content })),
+      });
+    }
+    typingNode.remove();
+    appendMessage({ role: 'assistant', content: reply });
+  } catch (err) {
+    typingNode.remove();
+    const hint = state.mode === 'server'
+      ? '\n\nIf this persists, check the server log in your terminal — it usually points to either a Claude Code auth issue or a network problem.'
+      : '\n\nIf you see a CORS error, you may need to serve this file via a local server instead of opening it directly. See the README for instructions.';
+    appendMessage({
+      role: 'error',
+      content: 'Chat call failed: ' + err.message + hint,
+    });
+    console.error(err);
+  } finally {
+    state.isSending = false;
+    els.send.disabled = false;
+    els.input.disabled = false;
+    els.input.focus();
+    updateMsgCount();
+    scrollToBottom();
+  }
+}
+
+async function callServer(message) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: state.serverSessionId,
+      message,
+    }),
+  });
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const j = await res.json();
+      detail = j.error || JSON.stringify(j);
+    } catch {
+      detail = await res.text();
+    }
+    throw new Error('HTTP ' + res.status + ' — ' + detail);
+  }
+  const data = await res.json();
+  if (typeof data.sessionId === 'string') {
+    state.serverSessionId = data.sessionId;
+  }
+  return typeof data.reply === 'string' ? data.reply : '(empty response)';
+}
+
+async function callAnthropic({ apiKey, model, system, messages }) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 4096,
+      system,
+      messages,
+    }),
+  });
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const j = await res.json();
+      detail = j.error?.message || JSON.stringify(j);
+    } catch {
+      detail = await res.text();
+    }
+    throw new Error('HTTP ' + res.status + ' — ' + detail);
+  }
+  const data = await res.json();
+  // Expect content[0].text for plain text response
+  const block = (data.content || []).find(b => b.type === 'text');
+  return block ? block.text : '(empty response)';
+}
+
+function appendMessage(msg) {
+  state.messages.push(msg);
+  renderMessages();
+  scrollToBottom();
+}
+
+function appendTypingIndicator() {
+  const node = document.createElement('div');
+  node.className = 'msg assistant';
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = 'assistant · thinking';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  node.appendChild(meta);
+  node.appendChild(bubble);
+  els.messages.appendChild(node);
+  return node;
+}
+
+function renderMessages() {
+  // Clear non-empty children except the empty state if no messages
+  const empty = els.empty;
+  els.messages.innerHTML = '';
+  if (state.messages.length === 0 && empty) {
+    empty.style.display = '';
+    els.messages.appendChild(empty);
+    return;
+  }
+  for (const m of state.messages) {
+    const node = document.createElement('div');
+    node.className = 'msg ' + m.role;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = m.role === 'user' ? 'you' : m.role === 'assistant' ? 'assistant' : m.role;
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = renderMarkdown(m.content);
+    node.appendChild(meta);
+    node.appendChild(bubble);
+    els.messages.appendChild(node);
+  }
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    els.messages.scrollTop = els.messages.scrollHeight;
+  });
+}
+
+function updateMsgCount() {
+  els.msgCount.textContent = state.messages.filter(m => m.role !== 'error').length;
+}
+
+function flashError(msg) {
+  appendMessage({ role: 'error', content: msg });
+}
+
+// =============================================================
+//  Minimal markdown renderer (no external dependency).
+//
+//  SECURITY MODEL — read before changing anything below.
+//
+//  This function returns HTML strings that callers assign to .innerHTML.
+//  That is safe IF AND ONLY IF the following invariants hold:
+//
+//    (1) escapeHtml() runs FIRST on the entire input.  All five HTML
+//        special characters (& < > " ') become entities before any
+//        markdown transformation runs.  Source characters cannot
+//        become syntax.
+//
+//    (2) Every markdown transformation below uses a STATIC HTML
+//        template (e.g. "<strong>$1</strong>") with the escaped
+//        capture as content.  No transformation produces an attribute
+//        whose value is dynamic except the link href.
+//
+//    (3) The link href is restricted to http(s) URLs by the regex.
+//        javascript:, data:, file:, vbscript: etc. cannot match.
+//        Even if a "&quot;" appears in the href value, the browser's
+//        HTML parser correctly treats it as literal data within the
+//        attribute, NOT as a syntactic quote that breaks out.
+//
+//    (4) Content Security Policy (see <head>) provides defense-in-
+//        depth: even if (1)-(3) were bypassed, the CSP forbids inline
+//        event handlers, third-party scripts, and any network call
+//        other than Anthropic.
+//
+//  If you add a new transformation that injects user content into an
+//  attribute, you MUST validate the attribute value separately, or
+//  use createElement + .textContent instead of string templating.
+// =============================================================
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function renderMarkdown(src) {
+  if (!src) return '';
+  // INVARIANT (1): escape ALL HTML special chars before any transformation.
+  let s = escapeHtml(src);
+
+  // Code blocks ```lang\n...```
+  s = s.replace(/```([a-zA-Z0-9]*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    return '<pre><code>' + code.replace(/\n$/, '') + '</code></pre>';
+  });
+
+  // Headings (after escaping, # is &#35; -> just #)
+  s = s.replace(/^### (.*)$/gm, '<h3>$1</h3>')
+       .replace(/^## (.*)$/gm, '<h3>$1</h3>')
+       .replace(/^# (.*)$/gm, '<h3>$1</h3>');
+
+  // Bold **x**
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  // Italic *x*
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  // Inline code `x`
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+  // Links [text](url) — only http(s).
+  // URL char class deliberately excludes whitespace, ), and the
+  // raw HTML special chars (which would already be entities after
+  // escapeHtml). Even if &quot; etc. appear in the captured URL,
+  // browser parsing keeps them as literal data inside the href value
+  // rather than terminating the attribute.
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  // Lists: group consecutive list items
+  // Unordered
+  s = s.replace(/(^|\n)((?:- .*(?:\n|$))+)/g, (_, pre, block) => {
+    const items = block.trim().split(/\n/).map(line => {
+      return '<li>' + line.replace(/^- /, '') + '</li>';
+    }).join('');
+    return pre + '<ul>' + items + '</ul>';
+  });
+  // Ordered
+  s = s.replace(/(^|\n)((?:\d+\. .*(?:\n|$))+)/g, (_, pre, block) => {
+    const items = block.trim().split(/\n/).map(line => {
+      return '<li>' + line.replace(/^\d+\. /, '') + '</li>';
+    }).join('');
+    return pre + '<ol>' + items + '</ol>';
+  });
+
+  // Paragraphs from double newlines
+  const parts = s.split(/\n{2,}/).map(part => {
+    if (/^\s*<(h\d|ul|ol|pre|blockquote)/.test(part.trim())) return part;
+    return '<p>' + part.replace(/\n/g, '<br>') + '</p>';
+  });
+  return parts.join('\n');
+}
+
+// =============================================================
+init();
+</script>
+</body>
+</html>

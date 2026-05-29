@@ -1,0 +1,23 @@
+{
+  "name": "holisticdrive-webapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local web frontend for the HolisticDrive engine. Serves a static chat UI on localhost and proxies chat requests through the Claude Agent SDK using subscription auth.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx server.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf node_modules"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.156"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}
