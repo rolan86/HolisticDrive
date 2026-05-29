@@ -8,3 +8,9 @@ findings/
 
 # Personal medical documents at repo root (PII)
 BloodReport*
+
+# Python virtualenv
+.venv/
+
+# Graphify skill output (local-only artefacts)
+graphify-out/
