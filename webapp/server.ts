@@ -31,6 +31,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // ~/.claude/projects/<encoded-cwd>/memory/. Created at boot.
 const SDK_CWD = join(tmpdir(), 'holisticdrive-sdk-isolated');
 
+// HolisticDrive project root — the parent of webapp/. Granted to the SDK via
+// additionalDirectories so the assistant can Read/Glob/Grep profiles/,
+// findings/, knowledge-base/, etc. when the user asks about their records.
+// Read-only: no Write/Edit/Bash in allowedTools.
+const HD_ROOT = resolvePath(join(__dirname, '..'));
+
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
@@ -43,7 +49,7 @@ const PORT = Number(process.env.PORT ?? 8847);
 const HOST = process.env.HOST ?? '127.0.0.1';
 const HAS_API_KEY = Boolean(process.env.ANTHROPIC_API_KEY);
 const AUTH_MODE = HAS_API_KEY ? 'api-key' : 'subscription';
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 const SYSTEM_PROMPT = `You are HolisticDrive — a research-informed holistic health intake specialist. You are NOT a doctor and never diagnose, treat, or cure conditions.
 
@@ -67,10 +73,17 @@ Format guidance:
 - Use short paragraphs and structured lists when the content benefits.
 - One or two thoughtful questions per turn beats a checklist of ten.
 
-Scope of this v1.5 prototype:
-- You currently have no tools (no file system, no profile persistence, no document upload).
-- If the user wants their data structured or saved, tell them this is the engine-connectivity prototype and persistence layer arrives in v2.
-- If they paste lab values or a list of symptoms, reflect them back accurately and offer initial advisory thoughts — but be clear that proper analysis needs the full pipeline.
+Scope of this v0.2 prototype:
+- You have READ-ONLY filesystem access to the HolisticDrive project directory (the parent of this webapp/) via the Read, Glob, and Grep tools. You cannot Write, Edit, or run Bash.
+- When the user asks about their own records, prior labs, or earlier research, look first instead of asking them to paste it. Mention which file(s) you read so they can verify.
+- Places worth checking (use Glob to confirm what's actually there before claiming a file exists):
+  - profiles/*.json — structured health profile (lab values, demographics, ancestry, conditions, medications)
+  - profiles/*.html — editorial briefs from prior research sessions (e.g. Lp(a) management plans)
+  - findings/*.json — per-session domain-specialist and medical-researcher findings
+  - knowledge-base/ — versioned research notes and reference material
+  - agents/, skills/ — the engine's own pipeline definitions (read if a user asks how the system works)
+- If profiles/ or findings/ are empty, treat the conversation as a fresh intake and gather context conversationally.
+- You CANNOT yet: persist new data, run the full pipeline (safety gate → triage → domain specialists → cross-reference → safety review → protocol generator), or accept document uploads. Tell the user clearly when their request needs those — they ship in v2.
 
 Be warm, direct, and respectful of the user's autonomy. They are the expert on their own life.`;
 
@@ -230,22 +243,24 @@ async function handleChat(req: IncomingMessage, res: ServerResponse): Promise<vo
   }
 
   // Build Agent SDK options.
-  // - allowedTools: [] disables every built-in tool (Read/Write/Bash/etc.).
-  //   This is critical: we want pure chat, not an agent that touches the
-  //   user's filesystem from inside the SDK process.
+  // - allowedTools: read-only filesystem access only (Read/Glob/Grep). No
+  //   Write/Edit/Bash. The assistant can introspect the user's HolisticDrive
+  //   records but cannot mutate the disk or run commands.
   // - settingSources: [] tells the SDK NOT to load ~/.claude/ or project
-  //   CLAUDE.md / skills / commands.
-  // - cwd: SDK_CWD points the agent at a neutral temp directory so it can't
-  //   locate project-keyed auto-memory at ~/.claude/projects/<cwd-hash>/
-  //   memory/ — without this, subscription auth leaks the developer's
-  //   Claude Code memory into the assistant's context. Belt-and-braces
-  //   alongside settingSources: [].
+  //   CLAUDE.md / skills / commands. Avoids inheriting developer context.
+  // - cwd: SDK_CWD is a neutral temp directory so the agent can't locate
+  //   project-keyed auto-memory at ~/.claude/projects/<cwd-hash>/memory/.
+  // - additionalDirectories: HD_ROOT grants the assistant read scope to the
+  //   HolisticDrive project (profiles/, findings/, knowledge-base/, etc.).
+  //   Combined with the read-only tool list, this is a deliberate, scoped
+  //   grant — not the broad inheritance settingSources would bring back.
   // - resume threads multi-turn context by reusing the prior session ID.
   const options: Options = {
     systemPrompt: SYSTEM_PROMPT,
-    allowedTools: [],
+    allowedTools: ['Read', 'Glob', 'Grep'],
     settingSources: [],
     cwd: SDK_CWD,
+    additionalDirectories: [HD_ROOT],
     ...(parsed.sessionId ? { resume: parsed.sessionId } : {}),
   };
 
@@ -311,6 +326,8 @@ function handleHealth(res: ServerResponse): void {
     version: VERSION,
     authMode: AUTH_MODE,
     sdkVersion: '0.3.156',
+    readableRoot: HD_ROOT,
+    tools: ['Read', 'Glob', 'Grep'],
   });
 }
 
@@ -381,9 +398,11 @@ ensureSdkCwd()
       const url = `http://${HOST}:${PORT}`;
       console.log('---');
       console.log(`  HolisticDrive webapp v${VERSION}`);
-      console.log(`  Auth mode:  ${AUTH_MODE}`);
-      console.log(`  SDK cwd:    ${SDK_CWD}`);
-      console.log(`  Listening:  ${url}`);
+      console.log(`  Auth mode:   ${AUTH_MODE}`);
+      console.log(`  SDK cwd:     ${SDK_CWD}`);
+      console.log(`  Read scope:  ${HD_ROOT}`);
+      console.log(`  Tools:       Read, Glob, Grep (read-only)`);
+      console.log(`  Listening:   ${url}`);
       console.log(`  Press Ctrl+C to stop.`);
       console.log('---');
     });
