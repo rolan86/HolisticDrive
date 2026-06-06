@@ -54,10 +54,20 @@ Agent tool:
 | `domains/mind` | 2 | Stress, anxiety, nervous system |
 | `domains/genetic` | 2 | SNPs, nutrigenomics, methylation panels |
 | `domains/geneticist` | 2 | Phenotype-derived inherited risk (Lp(a), FH, HFE, A1AT, thrombophilia) |
-| `domains/sleep` | 2 | Sleep architecture, circadian rhythm |
+| `domains/sleep` | 2 | Sleep architecture (pairs with chronobiology) |
 | `domains/immune` | 2 | Autoimmune, inflammation |
-| `domains/musculoskeletal` | 2 | Joint health, movement, exercise |
-| `domains/ayurveda` | 2 | Dosha analysis, constitutional protocols |
+| `domains/musculoskeletal` | 2 | Joint health, movement mechanics, pain (pairs with exercise-physiology) |
+| `domains/ayurveda` | 2 | Dosha analysis, constitutional protocols (**always active**) |
+| `domains/cardiology` | 2 | Preventive cardiology & lipidology — ASCVD risk synthesis, ApoB, CAC, plaque (pairs with geneticist) |
+| `domains/microbiome` | 2 | Microbial ecology — SCFA, gut-liver axis, TMAO, dysbiosis (pairs with gut-nutrition) |
+| `domains/herbalist` | 2 | Western phytotherapy + the botanical interaction/evidence-grading backstop (cross-checks ayurveda) |
+| `domains/exercise-physiology` | 2 | Training dose-response — VO2max, resistance Rx, Valsalva safety (pairs with musculoskeletal) |
+| `domains/chronobiology` | 2 | Circadian timing — light, meal timing/TRE, naps, chronotype (pairs with sleep) |
+| `domains/behavioral` | 2 | Habit formation & adherence engineering (**active whenever a protocol is produced**; defers clinical mood to mind) |
+| `domains/functional-medicine` | 2 | Root-cause systems synthesis — ranked falsifiable upstream-node hypotheses for multi-system clusters |
+| `domains/pharmacology` | 2 | Clinical pharmacology & interaction analysis — feeds the Phase 3 safety-review (never alters meds) |
+| `domains/health-economics` | 2 | Cost-effectiveness triage, local availability, coverage navigation (**active whenever a protocol is produced**) |
+| `domains/ethics` | 2 | Medical-ethics & autonomy guardian — four-principles audit (**always active**) |
 | `medical-researcher` | 2.5 | Bias-balanced literature briefs on flagged topics |
 | `cross-reference` | 3 | Cross-domain connections, conflict resolution |
 | `safety-review` | 3 | Final safety audit, interaction checking |
@@ -106,6 +116,8 @@ Agent tool:
 ```
 
 ## Phase 2: Domain Specialists (Parallel)
+
+The panel now has **20 specialists**. Triage decides the active subset — you dispatch exactly the `activeDomains` list it returns (a typical session activates 6–12, not all 20). Remember the standing rules triage applies: `ayurveda` and `ethics` are **always** in the active set; `behavioral` and `health-economics` are active whenever a protocol will be produced. Several specialists pair (microbiome↔gut-nutrition, chronobiology↔sleep, exercise-physiology↔musculoskeletal, cardiology↔geneticist, herbalist↔ayurveda) — if triage activated a pair, dispatch both.
 
 Dispatch ALL active domain specialists simultaneously using the Agent tool. Send each one a single message with:
 
