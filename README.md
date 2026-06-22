@@ -197,3 +197,7 @@ MCP servers start disabled and can be enabled in `.mcp.json`. All domain special
 ## License
 
 [MIT](LICENSE) — This project is provided for educational and research purposes only. It does not constitute medical advice.
+
+## Author
+
+Built and maintained by [Merryl D'Mello](https://reposition.dev). I write about multi-agent system design and reliable AI workflows, and run free workshops on both at [REPOSITION](https://reposition.dev).
