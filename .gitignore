@@ -14,3 +14,9 @@ BloodReport*
 
 # Graphify skill output (local-only artefacts)
 graphify-out/
+
+# /brag render output. Multi-megabyte mp4s plus a Remotion composition scaffold
+# with its own node_modules. The videos are launch assets, not source; they get
+# uploaded to the platform directly and must never enter git history.
+brag-output/
+brag-output-*/
