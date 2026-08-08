@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code_Plugin-16_Agents_%7C_4_Skills_%7C_65_KB_Files-blue?style=for-the-badge" alt="Plugin Scale">
+  <img src="https://img.shields.io/badge/Claude_Code_Plugin-28_Agents_%7C_4_Skills_%7C_65_KB_Files-blue?style=for-the-badge" alt="Plugin Scale">
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/Safety-3_Layer_Graduated-orange?style=for-the-badge" alt="Safety Model">
   <img src="https://img.shields.io/badge/Architecture-Hybrid_Pipeline_%2B_Swarm-purple?style=for-the-badge" alt="Architecture">
@@ -38,7 +38,7 @@ Phase 1: Sequential Safety Pipeline
   Intake → Safety Gate → Triage
 
 Phase 2: Parallel Domain Analysis
-  9 domain specialists analyze simultaneously
+  Triage-selected panel from 20 domain specialists, analyzed in parallel
 
 Phase 3: Sequential Synthesis
   Cross-Reference → Safety Review → Protocol Generator
@@ -62,8 +62,8 @@ Phase 3: Sequential Synthesis
 
 ```bash
 # 1. Clone this repository
-git clone https://github.com/rolan86/holistic-drive.git
-cd holistic-drive
+git clone https://github.com/rolan86/HolisticDrive.git
+cd HolisticDrive
 
 # 2. Register as a local marketplace
 claude plugin marketplace add ./
@@ -154,7 +154,7 @@ Safety restrictions propagate through the entire pipeline to all downstream agen
 ## Project Structure
 
 ```
-holistic-drive/
+HolisticDrive/
 ├── .claude-plugin/
 │   ├── plugin.json          # Plugin manifest
 │   └── marketplace.json     # Marketplace registration
@@ -168,7 +168,7 @@ holistic-drive/
 │   ├── cross-reference.md   # Conflict resolution
 │   ├── safety-review.md     # Phase 3 safety audit
 │   ├── protocol-generator.md # Output generation
-│   └── domains/             # 9 domain specialists
+│   └── domains/             # 20 domain specialists
 ├── skills/
 │   ├── holistic-review/     # Full analysis entry point
 │   ├── holistic-checkin/    # Follow-up session
