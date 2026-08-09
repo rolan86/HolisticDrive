@@ -6,8 +6,13 @@ findings/
 # Local Claude Code config
 .claude/
 
-# Personal medical documents at repo root (PII)
+# Local personal documents
 BloodReport*
+
+# Local environment
+.env
+.env.*
+!.env.example
 
 # Python virtualenv
 .venv/
@@ -15,18 +20,12 @@ BloodReport*
 # Graphify skill output (local-only artefacts)
 graphify-out/
 
-# /brag render output. Multi-megabyte mp4s plus a Remotion composition scaffold
-# with its own node_modules. The videos are launch assets, not source; they get
-# uploaded to the platform directly and must never enter git history.
-# Moved out 2026-08-09 to dmello-advisory-hq (private), which is where launch
-# assets and their copy now live. These patterns stay as a guard so a future
-# /brag run cannot deposit marketing material back into a public repo.
+# Render output. Multi-megabyte mp4s plus a composition scaffold with its own
+# node_modules. Marketing and launch assets live outside this repo; these
+# patterns stay as a guard so a render cannot deposit them back into it.
 brag-output/
 brag-output-*/
 
-# Session working notes. Both carry health PII despite DECISIONS.md's stated
-# PII boundary: its "Open questions" section names pending workups and a
-# personal health goal, and corrections-raw.txt is the raw transcript harvest
-# it was built from. This repo is PUBLIC. They stay local, like profiles/.
+# Local session notes
 DECISIONS.md
 corrections-raw.txt
