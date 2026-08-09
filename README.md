@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>Agentic holistic health research framework for Claude Code.</strong><br>
-  Iterative multi-domain analysis with 9 specialists, a curated knowledge base, and graduated safety.
+  Iterative multi-domain analysis with 20 domain specialists, a curated knowledge base, and graduated safety.
 </p>
 
 <p align="center">
@@ -47,7 +47,7 @@ Phase 3: Sequential Synthesis
 1. **Intake** — Conversational health data collection, profile management, document parsing
 2. **Safety Gate** — Graduated 3-state assessment (HALT / PROCEED WITH RESTRICTIONS / PROCEED NORMALLY)
 3. **Triage** — Routes to the appropriate domain specialists based on health profile
-4. **Domain Specialists** — 9 parallel specialists analyze different body systems
+4. **Domain Specialists** — A triage-selected panel from 20 domain specialists analyzes different body systems in parallel
 5. **Cross-Reference** — Identifies connections and resolves conflicts across domains
 6. **Safety Review** — Final audit: herb-drug interactions, contraindications, language check
 7. **Protocol Generator** — Produces structured 9-section output with prioritized action plan

@@ -76,7 +76,7 @@ py -3 -m http.server 8765
 - All data stays on the user's machine (no telemetry, no analytics)
 
 **It isn't (yet):**
-- The full HolisticDrive pipeline (intake → safety gate → triage → 9 domain specialists → cross-reference → safety review → protocol generator)
+- The full HolisticDrive pipeline (intake → safety gate → triage → 20 domain specialists → cross-reference → safety review → protocol generator)
 - Doesn't persist conversations or build a structured profile (`merryl.json`-style)
 - Doesn't upload or OCR lab reports
 - Doesn't render the editorial protocol HTML briefs
